@@ -40,23 +40,7 @@ public struct Iban: Equatable {
     }
 
     public func formatted() -> String? {
-        guard let formattingMask = country?.expectedIbanFormat else {
-            return nil
-        }
-
-        var passedSpaces = 0
-        var formatted: String = .empty
-        for (index, char) in underlying.enumerated() {
-            let offset = index + passedSpaces
-            let mask = formattingMask[formattingMask.index(formattingMask.startIndex, offsetBy: offset)]
-            if mask == " " {
-                passedSpaces += 1
-                formatted.append(" ")
-            }
-
-            formatted.append(char)
-        }
-        return formatted.trimmingCharacters(in: .whitespacesAndNewlines)
+        IbanValidator.format(iban: underlying)
     }
 }
 
@@ -409,8 +393,30 @@ public struct IbanValidator {
         }
     }
 
-    static func clean(iban: String) -> String {
+    public static func clean(iban: String) -> String {
         String(iban.unicodeScalars.filter(CharacterSet.nonWhitespace.contains)).uppercased()
+    }
+
+    public static func format(iban: String) -> String? {
+        guard let countryCode = iban.countryCode, let country = SupportedCountry(rawValue: countryCode) else {
+            return nil
+        }
+
+        let formattingMask = country.expectedIbanFormat
+        var passedSpaces = 0
+        var formatted: String = .empty
+
+        for (index, char) in iban.enumerated() {
+            let offset = index + passedSpaces
+            let mask = formattingMask[formattingMask.index(formattingMask.startIndex, offsetBy: offset)]
+            if mask == " " {
+                passedSpaces += 1
+                formatted.append(" ")
+            }
+
+            formatted.append(char)
+        }
+        return formatted.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
