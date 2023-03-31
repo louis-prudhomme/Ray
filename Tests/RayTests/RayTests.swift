@@ -10,7 +10,7 @@ final class RayTests: XCTestCase {
 
         XCTAssertTrue(Iban(from: ibanUnderTest).country == nil)
     }
-
+    
     func test_shouldBeInvalid_forEmptyIban() {
         let ibanUnderTest = ""
 
@@ -95,7 +95,16 @@ final class RayTests: XCTestCase {
 
         XCTAssertEqual(expected, actual!)
     }
+    
+    func test_shouldFormat_tooLongIban() {
+        let ibanUnderTest = "SC001111223344445555666677778889999"
+        let expected = "SC00 1111 22 33 4444 5555 6666 7777 8889999"
 
+        let actual = Iban(from: ibanUnderTest).formatted()
+
+        XCTAssertEqual(expected, actual!)
+    }
+    
     func test_shouldFormat_seychellesIban() {
         let ibanUnderTest = "SC00111122334444555566667777888"
         let expected = "SC00 1111 22 33 4444 5555 6666 7777 888"

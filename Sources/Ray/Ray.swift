@@ -412,13 +412,17 @@ public struct IbanValidator {
 
         for (index, char) in clean(iban: iban).enumerated() {
             let offset = index + passedSpaces
-            let mask = formattingMask[formattingMask.index(formattingMask.startIndex, offsetBy: offset)]
-            if mask == " " {
-                passedSpaces += 1
-                formatted.append(" ")
+            if offset >= formattingMask.count {
+                formatted.append(char)
+            } else {
+                let mask = formattingMask[formattingMask.index(formattingMask.startIndex, offsetBy: offset)]
+                if mask == " " {
+                    passedSpaces += 1
+                    formatted.append(" ")
+                }
+                
+                formatted.append(char)
             }
-
-            formatted.append(char)
         }
         return formatted.trimmingCharacters(in: .whitespacesAndNewlines)
     }
