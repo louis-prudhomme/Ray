@@ -17,7 +17,7 @@ public struct Iban: Equatable {
     public let underlying: String
 
     public init(from source: String) {
-        self.underlying = source
+        underlying = source
     }
 
     public func clean() -> String {
@@ -31,7 +31,7 @@ public struct Iban: Equatable {
     public var invalidityReasons: [IbanViolation] {
         IbanValidator.validate(for: underlying)
     }
-    
+
     public var countryCode: String? {
         underlying.countryCode
     }
@@ -47,7 +47,7 @@ public enum IbanViolation: Error, Equatable {
     static let MAX_IBAN_LENGTH = 34
 }
 
-public enum SupportedCountry: String {
+public enum SupportedCountry: String, CaseIterable {
     case AL
     case AD
     case AT
@@ -317,13 +317,13 @@ extension IbanValidator {
         return remainingChars + firstFourChars
     }
 
+    private static let letters: [Character: Int] = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
+                                                    "A": 10, "B": 11, "C": 12, "D": 13, "E": 14, "F": 15, "G": 16, "H": 17, "I": 18,
+                                                    "J": 19, "K": 20, "L": 21, "M": 22, "N": 23, "O": 24, "P": 25, "Q": 26, "R": 27,
+                                                    "S": 28, "T": 29, "U": 30, "V": 31, "W": 32, "X": 33, "Y": 34, "Z": 35]
+
     private static func replaceAlphaChars(in string: String) throws -> String {
         struct NotFound: Error {}
-
-        let letters: [Character: Int] = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
-                                         "A": 10, "B": 11, "C": 12, "D": 13, "E": 14, "F": 15, "G": 16, "H": 17, "I": 18,
-                                         "J": 19, "K": 20, "L": 21, "M": 22, "N": 23, "O": 24, "P": 25, "Q": 26, "R": 27,
-                                         "S": 28, "T": 29, "U": 30, "V": 31, "W": 32, "X": 33, "Y": 34, "Z": 35]
 
         return try string
             .map { letters[$0] }

@@ -8,11 +8,11 @@ Being a small Swift library to check the validity of IBAN codes. It's based on t
 
 1. Add `.package(url: "https://github.com/louis-prudhomme/Ray.git"),` to your `Package.swift`
 2. Run `swift package update`
-5. That should be it.
+3. That should be it.
 
-*Cocoapods:*
+*Carthage:*
 
-Not yet. Maybe one day.
+Not yet. Maybe one day. You may want to fall back to the original library this repository is a fork of: [timd/IBANValidator](https://github.com/timd/IBANValidator).
 
 ## Usage
 
@@ -20,53 +20,50 @@ Not yet. Maybe one day.
 2. Test the IBAN as such:
 
 ```swift
-let validIBAN = "AL90208110080000001039531801"
+let validIbanNumber = Iban(from: "AL90208110080000001039531801")
+let invalidIbanNumber = Iban(from: "dqzdqpzodzkqpdozqdu_ehçàçéi")
+let anotherInvalidIbanNumber = Iban(from: "AL90208110080000001039531801921902118972918273")
+
+print("\(validIbanNumber.isValid)") // true
+print("\(invalidIbanNumber.isValid)") // false
+print("\(anotherInvalidIbanNumber.isValid)") // false
+
+// OR
 
 do {
-    
-    // returns true for valid IBAN, false + error
-    // if there's a problem
-    let _ = try IBANValidator(iban: validIBAN)
-    
-    // Validation was successful, carry on
-    
-} catch let error as IBANValidationError {
-    
-    // Something is wrong with the IBAN, so handle the error
-    print(error)
-    
+    IbanValidator.validateOrThrow(for: "FR7710293109283091830989776654")
 } catch {
-    
-    // Something else went wrong
-    
+    (error as? IbanValidatorError)?.violations.map { print("Iban invalid because \($0)")}
 }
 ```
 
 ## Validation errors
 
-Errors are returned as an `IbanValidationError`:
+Errors are returned as an `IbanValidatorError`. It bears all the violations of the IBAN which allow you to provide feedback to your users.
 
-```swift
-public enum IBANValidationError: String, LocalizedError {
-    case invalidChecksum = "Invalid checksum"
-    case invalidCountryCode = "Invalid country code"
-    case invalidLength = "Invalid length"
-    case invalidCharacters = "Invalid characters"
-}
-```
-* `invalidChecksum` is returned if the checksum calculation fails. This indicates an invalid IBAN.
-* `invalidCountryCode` is returned if the country code does not appear on the list of supported countries (see the list at the top of `IBANValidator.swift` for the current list)
-* `invalidLength` is returned if the provided IBAN is longer than 34 characters; or exceeds the length defined as the maximum for the country (these differ from country to country) 
-* `invalidCharacters` is returned if the provided IBAN contains non-alphanumeric characters. The IBAN standard doesn't support Emoji yet.
+- `invalidChecksum`: IBAN has an invalid checksum.
+- `unknownCountryCode`: could not parse the country code (first two letters)
+- `exceedsMaximumLength`: IBAN is over 34 characters
+- `exceedsCountryLengthSpecification`: IBAN exceeds what length is specified for the country
+- `containsForbiddenCharacters`: IBAN contains forbidden characters. Essentially, any non-alphanumeric character.
+
+# Helpers
 
 ## Country codes
 
-As a convenience for populating things like picker lists, `IBANValidator` exposes the `countries` property which is an `Array` of `Dictionaries` containing a two-letter country code as the key. When sorted, this could be used as the data source for a picker to speed up the IBAN data entry and reduce use errors.
+As a convenience for populating things like picker lists, `Ray` exposes the `SupportedCountry` `enum`. It is `CaseIterable` in order to build picker lists.
+
+## Formatting
+
+Will follow soon :)
 
 ## Acknowledgements
 
-This framework uses Marcel Kröker's [Swift-Big-Integer library](https://github.com/mkrd/Swift-Big-Integer), because calculating mod(97) of 34-digit integers makes my head hurt. Sample IBAN numbers for testing can be obtained [here](https://www.iban-bic.com/sample_accounts.html).
+- This library uses [BigInt](https://github.com/attaswift/BigInt), as validating an IBAN requires computing the mod(97) of 34-digit integers.
+- This library is based off [timd/IBANValidator](https://github.com/timd/IBANValidator) ; many thanks for their excellent work !
 
 ## Disclaimer
 
-Use at your own risk. You probably don't want to rely on this library alone if you're doing anything as dramatic as transferring real money. But it's a good starting point...
+This library should only be used to check for an IBAN base conformity. It *must not* be the only check your program performs on user-given IBANs, but rather a passage before tapping onto [IBAN.com](https://www.iban.com/iban-suite) validator. 
+
+Use at your own risk.
