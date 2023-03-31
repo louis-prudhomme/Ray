@@ -11,6 +11,32 @@
 import BigInt
 import Foundation
 
+// MARK: - Public types
+
+public struct Iban: Equatable {
+    public let underlying: String
+
+    public init(from source: String) {
+        self.underlying = source
+    }
+
+    public func clean() -> String {
+        IbanValidator.clean(iban: underlying)
+    }
+
+    public var isValid: Bool {
+        invalidityReasons.count == 0
+    }
+
+    public var invalidityReasons: [IbanViolation] {
+        IbanValidator.validate(for: underlying)
+    }
+    
+    public var countryCode: String? {
+        underlying.countryCode
+    }
+}
+
 public enum IbanViolation: Error, Equatable {
     case invalidChecksum
     case unknownCountryCode(was: String)
@@ -189,10 +215,18 @@ public struct IbanValidator {
 
     private init() {}
 
+    public static func validate(for iban: Iban) -> [IbanViolation] {
+        validate(for: iban.underlying)
+    }
+
     public static func validate(for iban: String) -> [IbanViolation] {
         let cleanIban = clean(iban: iban)
 
         return Self.rules.compactMap { $0(cleanIban) }
+    }
+
+    public static func validateOrThrow(for iban: Iban) throws {
+        try validateOrThrow(for: iban.underlying)
     }
 
     public static func validateOrThrow(for iban: String) throws {
@@ -203,7 +237,7 @@ public struct IbanValidator {
         }
     }
 
-    private static func clean(iban: String) -> String {
+    static func clean(iban: String) -> String {
         String(iban.unicodeScalars.filter(CharacterSet.nonWhitespace.contains)).uppercased()
     }
 }
