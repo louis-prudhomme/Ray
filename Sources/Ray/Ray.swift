@@ -398,7 +398,7 @@ public struct IbanValidator {
     }
     
     public static func internationalFormatting(iban: String) -> String {
-        iban.inserting(separator: " ", every: 4)
+        clean(iban: iban).inserting(separator: " ", every: 4)
     }
 
     public static func format(iban: String) -> String? {
