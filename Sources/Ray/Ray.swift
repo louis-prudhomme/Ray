@@ -56,7 +56,7 @@ public struct Iban: Equatable {
 
             formatted.append(char)
         }
-        return formatted
+        return formatted.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
