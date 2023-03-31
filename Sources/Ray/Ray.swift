@@ -396,6 +396,10 @@ public struct IbanValidator {
     public static func clean(iban: String) -> String {
         String(iban.unicodeScalars.filter(CharacterSet.nonWhitespace.contains)).uppercased()
     }
+    
+    public static func internationalFormatting(iban: String) -> String {
+        iban.inserting(separator: " ", every: 4)
+    }
 
     public static func format(iban: String) -> String? {
         guard let countryCode = iban.countryCode, let country = SupportedCountry(rawValue: countryCode) else {
@@ -406,7 +410,7 @@ public struct IbanValidator {
         var passedSpaces = 0
         var formatted: String = .empty
 
-        for (index, char) in iban.enumerated() {
+        for (index, char) in clean(iban: iban).enumerated() {
             let offset = index + passedSpaces
             let mask = formattingMask[formattingMask.index(formattingMask.startIndex, offsetBy: offset)]
             if mask == " " {
