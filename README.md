@@ -1,15 +1,14 @@
-# IBANValidator
-Being a small Swift framework to check validity of IBAN codes. It's based on the the ISO 13616:2007 standard, which defines a checksum process described [here](https://en.wikipedia.org/wiki/International_Bank_Account_Number#Validating_the_IBAN).
+# Ray (Iban)
+
+Being a small Swift library to check the validity of IBAN codes. It's based on the the ISO 13616:2007 standard, which defines a checksum process described [here](https://en.wikipedia.org/wiki/International_Bank_Account_Number#Validating_the_IBAN).
 
 ## Installation
 
-*Carthage:*
+*SPM:*
 
-1. Add `github "timd/IBANValidator"` to the Cartfile
-1. Run `carthage update`
-1. Add the framework to the `Link Binary with Libraries` build phase, and add to the `Carthage Run Script` build phase as per the [Carthage documentation](https://github.com/Carthage/Carthage#adding-frameworks-to-an-application).
-1. Er...
-1. That's it.
+1. Add `.package(url: "https://github.com/louis-prudhomme/Ray.git"),` to your `Package.swift`
+2. Run `swift package update`
+5. That should be it.
 
 *Cocoapods:*
 
@@ -17,8 +16,8 @@ Not yet. Maybe one day.
 
 ## Usage
 
-1. Import the framework into the class: `import IBANValidator`
-2. Test the IBAN:
+1. Import the framework wherever you want to use it: `import Ray`
+2. Test the IBAN as such:
 
 ```swift
 let validIBAN = "AL90208110080000001039531801"
@@ -45,7 +44,7 @@ do {
 
 ## Validation errors
 
-Errors are returned as an `IBANValidationError`:
+Errors are returned as an `IbanValidationError`:
 
 ```swift
 public enum IBANValidationError: String, LocalizedError {
