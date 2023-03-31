@@ -428,7 +428,7 @@ extension IbanValidator {
 
     private static func doesIbanHaveValidCountryCode(iban: String) -> IbanViolation? {
         guard let countryCode = iban.countryCode else {
-            return nil
+            return .unknownCountryCode(was: iban.countryCode ?? "<nil>")
         }
         return SupportedCountry(rawValue: countryCode) == nil
             ? .unknownCountryCode(was: iban.countryCode ?? "<nil>")
@@ -449,7 +449,9 @@ extension IbanValidator {
     }
 
     private static func hasValidChecksum(for iban: String) -> IbanViolation? {
-        let rearranged = rearrange(iban: iban)
+        guard let rearranged = rearrange(iban: iban) else {
+            return nil
+        }
         if let expunged = try? replaceAlphaChars(in: rearranged) {
             let checksum = BigInt(stringLiteral: expunged) % 97
             return checksum == 1 ? nil : .invalidChecksum
@@ -501,7 +503,10 @@ extension Collection {
 // MARK: - Checksum helpers
 
 extension IbanValidator {
-    private static func rearrange(iban: String) -> String {
+    private static func rearrange(iban: String) -> String? {
+        guard iban.count >= 4 else {
+            return nil
+        }
         // Get first 4 chars
         let firstFourCharsIndex = iban.index(iban.startIndex, offsetBy: 4)
         let firstFourChars = String(iban[iban.startIndex ..< firstFourCharsIndex])
