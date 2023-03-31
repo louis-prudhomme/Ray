@@ -65,6 +65,24 @@ final class RayTests: XCTestCase {
         actual.forEach { XCTAssertTrue(expected.contains($0)) }
     }
 
+    func test_shouldFormat_validIban() {
+        let ibanUnderTest = "FR2730003000309332627391239"
+        let expected = "FR27 3000 3000 3093 3262 7391 239"
+
+        let actual = Iban(from: ibanUnderTest).formatted()
+
+        XCTAssertEqual(expected, actual!)
+    }
+
+    func test_shouldFormat_seychellesIban() {
+        let ibanUnderTest = "SC00111122334444555566667777888"
+        let expected = "SC00 1111 22 33 4444 5555 6666 7777 888"
+
+        let actual = Iban(from: ibanUnderTest).formatted()
+
+        XCTAssertEqual(expected, actual!)
+    }
+
     func test_shouldNotThrow_WhenTrueForValidIban() {
         // Test IBANs taken from https://www.iban-bic.com/sample_accounts.html
 

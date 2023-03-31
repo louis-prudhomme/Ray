@@ -55,7 +55,7 @@ As a convenience for populating things like picker lists, `Ray` exposes the `Sup
 
 ## Formatting
 
-Will follow soon :)
+Use the `Iban#formatted` method to format your IBAN. Formatting depends on the country code of your IBAN.
 
 ## Acknowledgements
 

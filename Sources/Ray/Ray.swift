@@ -32,8 +32,31 @@ public struct Iban: Equatable {
         IbanValidator.validate(for: underlying)
     }
 
-    public var countryCode: String? {
-        underlying.countryCode
+    public var country: SupportedCountry? {
+        if let countryCode = underlying.countryCode, let country = SupportedCountry(rawValue: countryCode) {
+            return country
+        }
+        return nil
+    }
+
+    public func formatted() -> String? {
+        guard let formattingMask = country?.expectedIbanFormat else {
+            return nil
+        }
+
+        var passedSpaces = 0
+        var formatted: String = .empty
+        for (index, char) in underlying.enumerated() {
+            let offset = index + passedSpaces
+            let mask = formattingMask[formattingMask.index(formattingMask.startIndex, offsetBy: offset)]
+            if mask == " " {
+                passedSpaces += 1
+                formatted.append(" ")
+            }
+
+            formatted.append(char)
+        }
+        return formatted
     }
 }
 
@@ -109,6 +132,7 @@ public enum SupportedCountry: String, CaseIterable {
     case RS
     case SK
     case SI
+    case SC
     case ES
     case SE
     case CH
@@ -185,12 +209,160 @@ extension SupportedCountry {
         case .SI: return 19
         case .ES: return 24
         case .SE: return 24
+        case .SC: return 31
         case .CH: return 21
         case .TN: return 24
         case .TR: return 26
         case .AE: return 23
         case .GB: return 22
         case .VG: return 24
+        }
+    }
+}
+
+extension SupportedCountry {
+    private static let IBAN_MASK_CHARACTER: Character = "*"
+    var expectedIbanFormat: String {
+        switch self {
+        case .AL: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .AD: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .AT: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .AZ: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .BH: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .BY: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .BE: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .BA: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .BR: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .BG: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .CR: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .HR: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .CY: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .CZ: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .DK: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .DO: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .TL: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .EE: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .FO: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .FI: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .FR: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .GE: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .DE: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .GI: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .GR: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .GL: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .GT: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .HU: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .IS: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .IE: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .IL: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .IT: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .JO: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .KZ: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .XK: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .KW: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .LV: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .LB: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .LI: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .LT: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .LU: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .MK: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .MT: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .MR: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .MU: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .MC: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .MD: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .ME: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .NL: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .NO: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .PK: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .PS: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .PL: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .PT: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .QA: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .RO: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .SM: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .SA: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .RS: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .SK: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .SI: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .ES: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .SE: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .SC: return "**** **** ** ** **** **** **** **** ***"
+        case .CH: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .TN: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .TR: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .AE: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .GB: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
+        case .VG: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
+            .inserting(separator: " ", every: 4)
         }
     }
 }
@@ -242,22 +414,6 @@ public struct IbanValidator {
     }
 }
 
-// MARK: - Helpers
-
-extension String {
-    var countryCode: String? {
-        if count < 2 { return nil }
-        return String(prefix(2))
-    }
-
-    var checksum: String? {
-        if count < 4 { return nil }
-        return String(prefix(4).suffix(2))
-    }
-
-    static var empty: String { "" }
-}
-
 // MARK: - Rules
 
 extension IbanValidator {
@@ -299,6 +455,45 @@ extension IbanValidator {
             return checksum == 1 ? nil : .invalidChecksum
         } else {
             return nil
+        }
+    }
+}
+
+// MARK: - String helpers
+
+extension String {
+    var countryCode: String? {
+        if count < 2 { return nil }
+        return String(prefix(2))
+    }
+
+    var checksum: String? {
+        if count < 4 { return nil }
+        return String(prefix(4).suffix(2))
+    }
+
+    static var empty: String { "" }
+
+    func inserting<S: StringProtocol>(separator: S, every n: Int) -> Self {
+        .init(unfoldSubSequences(limitedTo: n).joined(separator: separator))
+    }
+}
+
+extension Collection {
+    func unfoldSubSequences(limitedTo maxLength: Int) -> UnfoldSequence<SubSequence, Index> {
+        sequence(state: startIndex) { start in
+            guard start < endIndex else { return nil }
+            let end = index(start, offsetBy: maxLength, limitedBy: endIndex) ?? endIndex
+            defer { start = end }
+            return self[start ..< end]
+        }
+    }
+
+    func every(n: Int) -> UnfoldSequence<Element, Index> {
+        sequence(state: startIndex) { index in
+            guard index < endIndex else { return nil }
+            defer { let _ = formIndex(&index, offsetBy: n, limitedBy: endIndex) }
+            return self[index]
         }
     }
 }
