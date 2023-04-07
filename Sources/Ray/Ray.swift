@@ -401,7 +401,7 @@ public struct IbanValidator {
         clean(iban: iban).inserting(separator: " ", every: 4)
     }
     
-    public static func expactedNumberOfCharacters(for iban: String) -> Int? {
+    public static func expectedNumberOfCharacters(for iban: String) -> Int? {
         iban.countryCode.map { SupportedCountry(rawValue: $0) }?.flatMap { $0.expectedIbanLength }
     }
 
