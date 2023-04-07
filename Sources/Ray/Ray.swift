@@ -400,6 +400,10 @@ public struct IbanValidator {
     public static func internationalFormatting(iban: String) -> String {
         clean(iban: iban).inserting(separator: " ", every: 4)
     }
+    
+    public static func expactedNumberOfCharacters(for iban: String) -> Int? {
+        iban.countryCode.map { SupportedCountry(rawValue: $0) }?.flatMap { $0.expectedIbanLength }
+    }
 
     public static func format(iban: String) -> String? {
         guard let countryCode = iban.countryCode, let country = SupportedCountry(rawValue: countryCode) else {

@@ -16,9 +16,19 @@ final class RayTests: XCTestCase {
 
         XCTAssertTrue(Iban(from: ibanUnderTest).isValid == false)
     }
-
+    
     func test_shouldThrow_WhenInvalidChecksum() {
         let ibanUnderTest = "FR2830003000309332627391239"
+
+        let expected: [IbanViolation] = [.invalidChecksum]
+        let actual: [IbanViolation] = IbanValidator.validate(for: ibanUnderTest)
+
+        expected.forEach { XCTAssertTrue(actual.contains($0)) }
+        actual.forEach { XCTAssertTrue(expected.contains($0)) }
+    }
+    
+    func test_shouldThrow_WhenInvalidChecksum2() {
+        let ibanUnderTest = "GB55BUKB20201555555555"
 
         let expected: [IbanViolation] = [.invalidChecksum]
         let actual: [IbanViolation] = IbanValidator.validate(for: ibanUnderTest)
