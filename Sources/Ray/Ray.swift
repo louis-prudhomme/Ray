@@ -127,7 +127,7 @@ public enum SupportedCountry: String, CaseIterable {
     case VG
 }
 
-extension SupportedCountry {
+public extension SupportedCountry {
     var expectedIbanLength: Int {
         switch self {
         case .AL: return 28
@@ -204,8 +204,8 @@ extension SupportedCountry {
     }
 }
 
-extension SupportedCountry {
-    private static let IBAN_MASK_CHARACTER: Character = "*"
+public extension SupportedCountry {
+    static let IBAN_MASK_CHARACTER: Character = "*"
     var expectedIbanFormat: String {
         switch self {
         case .AL: return String(repeating: Self.IBAN_MASK_CHARACTER, count: expectedIbanLength)
@@ -351,7 +351,7 @@ extension SupportedCountry {
     }
 }
 
-extension CharacterSet {
+public extension CharacterSet {
     static let ibanAuthorized: CharacterSet = .uppercaseLetters.union(.decimalDigits)
     static let ibanForbidden: CharacterSet = ibanAuthorized.inverted
     static let nonWhitespace: CharacterSet = whitespaces.inverted
@@ -396,11 +396,11 @@ public struct IbanValidator {
     public static func clean(iban: String) -> String {
         String(iban.unicodeScalars.filter(CharacterSet.nonWhitespace.contains)).uppercased()
     }
-    
+
     public static func internationalFormatting(iban: String) -> String {
         clean(iban: iban).inserting(separator: " ", every: 4)
     }
-    
+
     public static func expectedNumberOfCharacters(for iban: String) -> Int? {
         iban.countryCode.map { SupportedCountry(rawValue: $0) }?.flatMap { $0.expectedIbanLength }
     }
@@ -424,7 +424,7 @@ public struct IbanValidator {
                     passedSpaces += 1
                     formatted.append(" ")
                 }
-                
+
                 formatted.append(char)
             }
         }
