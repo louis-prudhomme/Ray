@@ -1,4 +1,5 @@
 import XCTest
+import Nimble
 
 @testable import Ray
 
@@ -8,13 +9,13 @@ final class RayTests: XCTestCase {
     func test_countryShouldBeNil_forEmptyIban() {
         let ibanUnderTest = ""
 
-        XCTAssertTrue(Iban(from: ibanUnderTest).country == nil)
+        expect(Iban(from: ibanUnderTest).country).to(beNil())
     }
     
     func test_shouldBeInvalid_forEmptyIban() {
         let ibanUnderTest = ""
 
-        XCTAssertTrue(Iban(from: ibanUnderTest).isValid == false)
+        expect(Iban(from: ibanUnderTest).isValid).notTo(beTruthy())
     }
     
     func test_shouldThrow_WhenInvalidChecksum() {
@@ -23,8 +24,8 @@ final class RayTests: XCTestCase {
         let expected: [IbanViolation] = [.invalidChecksum]
         let actual: [IbanViolation] = IbanValidator.validate(for: ibanUnderTest)
 
-        expected.forEach { XCTAssertTrue(actual.contains($0)) }
-        actual.forEach { XCTAssertTrue(expected.contains($0)) }
+        expect(actual).to(contain(expected))
+        expect(actual.count).to(equal(expected.count))
     }
     
     func test_shouldThrow_WhenInvalidChecksum2() {
@@ -33,8 +34,8 @@ final class RayTests: XCTestCase {
         let expected: [IbanViolation] = [.invalidChecksum]
         let actual: [IbanViolation] = IbanValidator.validate(for: ibanUnderTest)
 
-        expected.forEach { XCTAssertTrue(actual.contains($0)) }
-        actual.forEach { XCTAssertTrue(expected.contains($0)) }
+        expect(actual).to(contain(expected))
+        expect(actual.count).to(equal(expected.count))
     }
 
     func test_shouldThrow_WhenInvalidCountryCode() {
@@ -43,8 +44,8 @@ final class RayTests: XCTestCase {
         let expected: [IbanViolation] = [.unknownCountryCode(was: "ZZ")]
         let actual: [IbanViolation] = IbanValidator.validate(for: ibanUnderTest)
 
-        expected.forEach { XCTAssertTrue(actual.contains($0)) }
-        actual.forEach { XCTAssertTrue(expected.contains($0)) }
+        expect(actual).to(contain(expected))
+        expect(actual.count).to(equal(expected.count))
     }
 
     func test_shouldThrow_WhenEmptyCountryCode() {
@@ -53,8 +54,8 @@ final class RayTests: XCTestCase {
         let expected: [IbanViolation] = [.unknownCountryCode(was: "<nil>")]
         let actual: [IbanViolation] = IbanValidator.validate(for: ibanUnderTest)
 
-        expected.forEach { XCTAssertTrue(actual.contains($0)) }
-        actual.forEach { XCTAssertTrue(expected.contains($0)) }
+        expect(actual).to(contain(expected))
+        expect(actual.count).to(equal(expected.count))
     }
 
     func test_shouldThrow_WhenInvalidCountryLength() {
@@ -63,8 +64,8 @@ final class RayTests: XCTestCase {
         let expected: [IbanViolation] = [.exceedsCountryLengthSpecification(expected: 27, got: 28)]
         let actual: [IbanViolation] = IbanValidator.validate(for: ibanUnderTest)
 
-        expected.forEach { XCTAssertTrue(actual.contains($0)) }
-        actual.forEach { XCTAssertTrue(expected.contains($0)) }
+        expect(actual).to(contain(expected))
+        expect(actual.count).to(equal(expected.count))
     }
 
     func test_shouldThrow_WhenInvalidLength() {
@@ -73,8 +74,8 @@ final class RayTests: XCTestCase {
         let expected: [IbanViolation] = [.exceedsMaximumLength(was: ibanUnderTest.count), .exceedsCountryLengthSpecification(expected: 27, got: ibanUnderTest.count)]
         let actual: [IbanViolation] = IbanValidator.validate(for: ibanUnderTest)
 
-        expected.forEach { XCTAssertTrue(actual.contains($0)) }
-        actual.forEach { XCTAssertTrue(expected.contains($0)) }
+        expect(actual).to(contain(expected))
+        expect(actual.count).to(equal(expected.count))
     }
 
     func test_shouldThrow_WhenInvalidCharacters() {
@@ -83,8 +84,8 @@ final class RayTests: XCTestCase {
         let expected: [IbanViolation] = [.containsForbiddenCharacters(saw: "🐷")]
         let actual: [IbanViolation] = IbanValidator.validate(for: ibanUnderTest)
 
-        expected.forEach { XCTAssertTrue(actual.contains($0)) }
-        actual.forEach { XCTAssertTrue(expected.contains($0)) }
+        expect(actual).to(contain(expected))
+        expect(actual.count).to(equal(expected.count))
     }
 
     func test_shouldNotThrow_ForAValidIban() {
@@ -93,8 +94,8 @@ final class RayTests: XCTestCase {
         let expected: [IbanViolation] = []
         let actual: [IbanViolation] = IbanValidator.validate(for: ibanUnderTest)
 
-        expected.forEach { XCTAssertTrue(actual.contains($0)) }
-        actual.forEach { XCTAssertTrue(expected.contains($0)) }
+        expect(actual).to(contain(expected))
+        expect(actual.count).to(equal(expected.count))
     }
 
     func test_shouldFormat_validIban() {
@@ -103,7 +104,7 @@ final class RayTests: XCTestCase {
 
         let actual = Iban(from: ibanUnderTest).formatted()
 
-        XCTAssertEqual(expected, actual!)
+        expect(actual!).to(equal(expected))
     }
     
     func test_shouldFormat_tooLongIban() {
@@ -112,7 +113,7 @@ final class RayTests: XCTestCase {
 
         let actual = Iban(from: ibanUnderTest).formatted()
 
-        XCTAssertEqual(expected, actual!)
+        expect(actual!).to(equal(expected))
     }
     
     func test_shouldFormat_seychellesIban() {
@@ -121,7 +122,7 @@ final class RayTests: XCTestCase {
 
         let actual = Iban(from: ibanUnderTest).formatted()
 
-        XCTAssertEqual(expected, actual!)
+        expect(actual!).to(equal(expected))
     }
 
     func test_shouldNotThrow_WhenTrueForValidIban() {
